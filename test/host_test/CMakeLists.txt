@@ -9,7 +9,8 @@ set(TARGET_PLATFORM_FILTER "host/.*")
 
 if (BUILD_HOST_TESTS)
 project(tfmcu-test)
-set(proj_src_dir "${CMAKE_SOURCE_DIR}/../../components")
+file(GLOB external_components  ${CMAKE_SOURCE_DIR}/../../external/*/components)
+set(proj_src_dir "${CMAKE_SOURCE_DIR}/../../components" ${external_components})
 
 message("proj_src_dir: ${proj_src_dir}")
 
@@ -31,7 +32,7 @@ if(ASAN)
   add_compile_options(-fsanitize=address -fstack-protector-all)
 endif()
 
-include(${proj_src_dir}/test_host/host_test.cmake)
+include(${CMAKE_SOURCE_DIR}/../../external/host-test-idf/components/test_host/host_test.cmake)
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/../components/main ${CMAKE_BINARY_DIR}/${BIN_COMP_ROOT}/main)
 
