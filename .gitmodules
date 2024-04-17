@@ -1,9 +1,3 @@
-[submodule "components/storage/spiffs"]
-	path = components/storage/esp8266/spiffs
-	url = https://github.com/pellepl/spiffs.git
-[submodule "components/net_mqtt/esp8266/esp_mqtt"]
-	path = components/net_mqtt/esp8266/esp_mqtt
-	url = https://github.com/tuanpmt/esp_mqtt.git
 [submodule "nanopb/nanopb"]
 	path = components/nanopb/nanopb
 	url = https://github.com/nanopb/nanopb.git
@@ -13,3 +7,6 @@
 [submodule "external/host-test-idf"]
 	path = external/host-test-idf
 	url = https://github.com/zwiebert/host-test-idf.git
+[submodule "external/util-components"]
+	path = external/util-components
+	url = https://github.com/zwiebert/util-components.git
