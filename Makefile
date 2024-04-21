@@ -136,13 +136,13 @@ test.cm.configure: $(config_h) $(config_cmake)
 	rm -fr $(HOST_TEST_BUILD_PATH)
 	mkdir -p $(HOST_TEST_BUILD_PATH)/config
 	make $(config_h) $(config_cmake)
-	cmake -B $(HOST_TEST_BUILD_PATH) -D BUILD_HOST_TESTS=ON -S  $(HOST_TEST_SRC_PATH) #-G Ninja)
+	cmake -B $(HOST_TEST_BUILD_PATH) -S  $(HOST_TEST_SRC_PATH) #-G Ninja)
 
 test.cm.configure_no_kconfgen:
 	rm -fr $(HOST_TEST_BUILD_PATH)
 	mkdir -p $(HOST_TEST_BUILD_PATH)/config
 	cp $(THIS_ROOT)/test/host_test/sdkconfig.h $(THIS_ROOT)/test/host_test/sdkconfig.cmake $(HOST_TEST_BUILD_PATH)/config/
-	cmake -B $(HOST_TEST_BUILD_PATH) -D BUILD_HOST_TESTS=ON -S  $(HOST_TEST_SRC_PATH) #-G Ninja)
+	cmake -B $(HOST_TEST_BUILD_PATH)  -S  $(HOST_TEST_SRC_PATH) #-G Ninja)
 
 
 
@@ -171,15 +171,19 @@ DOXY_BUILD_PATH=$(THIS_ROOT)/doxy/build
 DOXYFILE_PATH=$(THIS_ROOT)/doxy
 include doxygen_rules.mk
 
-$(DOXY_BUILD_PATH)/usr/input_files: $(DOXY_BUILD_PATH)/usr FORCE
-	mkdir -p $(dir $@)
-	echo "" > $@
+ext=external/*
 
 $(DOXY_BUILD_PATH)/api/input_files: $(DOXY_BUILD_PATH)/api FORCE
-	git ls-files 'components/**.h' 'components/**.hh' '*.md' | fgrep -e include -e README.md  > $@
+	-rm $@
+	for dir in $(ext) ; do \
+		(cd $${dir} && git ls-files README.md 'components/**.h' 'components/**.hh'  | xargs realpath) | fgrep include  >> $@ ; \
+	done
 
 $(DOXY_BUILD_PATH)/dev/input_files: $(DOXY_BUILD_PATH)/dev FORCE
-	git ls-files 'components/**.h' 'components/**.c' 'components/**.hh' 'components/**.cc' 'components/**.cpp' '*.md'  > $@
+	-rm $@
+	for dir in $(ext) ; do \
+		(cd $${dir} && git ls-files README.md 'components/**.h' 'components/**.hh' 'components/**.c' 'components/**.cc' 'components/**.cpp' | xargs realpath) >> $@ ; \
+	done
 
 ########### github pages ###############
 docs_html=$(DOXY_BUILD_PATH)/api/html
