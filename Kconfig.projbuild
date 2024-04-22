@@ -1,5 +1,0 @@
-rsource "external/util-components/Kconfig"
-rsource "external/components-misc/Kconfig"
-rsource "external/mbed-uout/Kconfig"
-rsource "external/mbed-net-lib/Kconfig"
-rsource "external/tronferno-lib/Kconfig"

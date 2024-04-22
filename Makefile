@@ -110,60 +110,17 @@ endef
 $(foreach tgt,$(esp32testtgts_auto),$(eval $(call GEN_RULE,$(tgt))))
 
 
-############## On Host ########################
+############## On Host Tests ########################
 HOST_TEST_BUILD_PATH=$(BUILD_BASE)/../host/test
 HOST_TEST_SRC_PATH=$(THIS_ROOT)/test/host_test
-
-.PHONY: test.cm.configure test.cm.build config
-
 config_h:=$(HOST_TEST_BUILD_PATH)/config/sdkconfig.h
 config_cmake:=$(HOST_TEST_BUILD_PATH)/config/sdkconfig.cmake
 config_dir:=$(THIS_ROOT)/test/config
 _config:=$(config_dir)/.config
-
-
-Kconfig.projbuild:
-	ls */Kconfig | sed -E -e 's/^/rsource  \"/' -e 's/$$/\"/' >$@
-
-menuconfig $(_config):
-	mkdir -p $(config_dir) && cd $(config_dir) && menuconfig $(THIS_ROOT)/Kconfig.projbuild
-
-$(config_h) $(config_cmake) config: $(_config)
-	python -m kconfgen  --kconfig $(THIS_ROOT)/Kconfig.projbuild --config $(_config) --output header $(config_h) --output cmake $(config_cmake)
-	cp $(config_h) $(config_cmake) $(THIS_ROOT)/test/host_test/ 
-
-test.cm.configure: $(config_h) $(config_cmake)
-	rm -fr $(HOST_TEST_BUILD_PATH)
-	mkdir -p $(HOST_TEST_BUILD_PATH)/config
-	make $(config_h) $(config_cmake)
-	cmake -B $(HOST_TEST_BUILD_PATH) -S  $(HOST_TEST_SRC_PATH) #-G Ninja)
-
-test.cm.configure_no_kconfgen:
-	rm -fr $(HOST_TEST_BUILD_PATH)
-	mkdir -p $(HOST_TEST_BUILD_PATH)/config
-	cp $(THIS_ROOT)/test/host_test/sdkconfig.h $(THIS_ROOT)/test/host_test/sdkconfig.cmake $(HOST_TEST_BUILD_PATH)/config/
-	cmake -B $(HOST_TEST_BUILD_PATH)  -S  $(HOST_TEST_SRC_PATH) #-G Ninja)
-
-
-
-cm_build := make -C $(HOST_TEST_BUILD_PATH) -k -j  -s --no-print-dir $(make_verbose_opts)
-#cm_build := (cd $(HOST_TEST_BUILD_PATH) && cmake -G Ninja $(THIS_ROOT) &&  ninja -k 0 --verbose $(ninja_verbose_opts))
-
-
-test.cm.build:
-	$(cm_build)
-
-test.cm.ctest: test.cm.build
-	cd  $(HOST_TEST_BUILD_PATH) && ctest --output-on-failure
-
+kconfigs=external/*/Kconfig
 TEST ?= test.weather.test_
-test.cm.ctest.regex: test.cm.build
-	(cd  $(HOST_TEST_BUILD_PATH) && ctest --output-on-failure -R "$(TEST)")
 
-
-host-test-all:
-	make -s --no-print-directory  test.cm.configure_no_kconfgen test.cm.ctest
-
+include ./host_test_rules.mk
 
 ############# Doxygen ###################
 doxy_flavors=usr dev api
