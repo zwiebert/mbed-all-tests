@@ -4,8 +4,8 @@ This repository pulls in components which depend on each other, so they can be t
 
 
 #### Documentation
-   *  Create API documentation for all submodules `make doxy-api-view`
-   *  Crate source documentation for all submodules `make doxy-dev-view`
+   *  Create and view API documentation `make doxy-api-view`
+   *  Crate and view source documentation `make doxy-dev-view`
 
 #### Testing  
    *  `make host-test-all`  configure, build and runs all tests
